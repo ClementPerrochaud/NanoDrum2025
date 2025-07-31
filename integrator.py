@@ -168,7 +168,7 @@ def get_Aijkl_Cijkl(layer_types, Lambda_val=Lambda_val, h_val=h_val, gap_val=gap
         if not l in save: save[l] = convert_ijkl(Lambda_val[l])
         Lijkl = save[l]
         Aijkl += Lijkl*(I[i+1]-I[i])
-        Cijkl += Lijkl*(I[i+1]**3-I[i]**3)
+        Cijkl += Lijkl*(I[i+1]**3-I[i]**3)/3
     return Aijkl, Cijkl
 
 
