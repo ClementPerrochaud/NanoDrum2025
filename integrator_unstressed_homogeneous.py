@@ -26,7 +26,7 @@ match mask:
     case _:        mask_nm = None
 eigen_f, eigen_z = solvK(K, 15, N, mask_nm)
 
-np.savez("eigensave", eigen_f=eigen_f, eigen_w=eigen_z)
+np.savez("eigensave", eigen_f=eigen_f, eigen_z=eigen_z)
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -38,4 +38,5 @@ for i,w in enumerate(eigen_z):
     ax[i//5,i%5].imshow(w.T, origin='lower', cmap='twilight', extent=[0, L, 0, L], vmax=1, vmin=-1)
     ax[i//5,i%5].set_xlabel("x"); ax[i//5,i%5].set_ylabel("y")
 plt.subplots_adjust(hspace=0.5)
+
 plt.show()
