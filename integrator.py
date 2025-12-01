@@ -194,16 +194,16 @@ def getMask_nm_image(path):
 def solvK(K, n_modes, N, mask_nm=None, which='SA', **eigsh_param):
     '''-> eigen_f, eigen_z'''
     if mask_nm is None : 
-        eigen_wl, eigen_z = eigsh(K, k=n_modes, which=which, **eigsh_param)
-        return np.abs(eigen_wl)**0.5/(2*np.pi), np.array([eigen_z[:,i].reshape((N,N))/np.max(np.abs(eigen_z[:,i])) for i in range(n_modes)])
+        eigen_k, eigen_z = eigsh(K, k=n_modes, which=which, **eigsh_param)
+        return np.abs(eigen_k)**0.5/(2*np.pi), np.array([eigen_z[:,i].reshape((N,N))/np.max(np.abs(eigen_z[:,i])) for i in range(n_modes)])
     Kr = K[mask_nm][:, mask_nm]
-    eigen_wl, eigen_zr = eigsh(Kr, k=n_modes, which=which, **eigsh_param)
+    eigen_k, eigen_zr = eigsh(Kr, k=n_modes, which=which, **eigsh_param)
     eigen_z = []
     for i in range(n_modes):
         z = np.zeros(N**2)
         z[mask_nm] = eigen_zr[:,i]
         eigen_z.append(z.reshape((N,N)))
-    return np.abs(eigen_wl)**0.5/(2*np.pi), np.array([np.array(zn)/np.max(np.abs(zn)) for zn in eigen_z])
+    return np.abs(eigen_k)**0.5/(2*np.pi), np.array([np.array(zn)/np.max(np.abs(zn)) for zn in eigen_z])
 
 
 
@@ -211,7 +211,7 @@ def solvK(K, n_modes, N, mask_nm=None, which='SA', **eigsh_param):
 ### - - - ______ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
-def anim(fnl, wnl, time_step, L, N, rhoh=1, Al=1):
+def anim(fnl, znl, time_step, L, N, rhoh=1, Al=1):
     x = np.linspace(-L/2, L/2, N)
     y = np.linspace(-L/2, L/2, N)
     X, Y = np.meshgrid(x, y)
@@ -220,8 +220,8 @@ def anim(fnl, wnl, time_step, L, N, rhoh=1, Al=1):
     ax = fig.add_subplot(111, projection='3d')
     ax_freq = plt.axes([0.25, 0.03, 0.5, 0.03])
 
-    def cnl(freq): return Al/(abs((freq**2-fnl**2)+1e-10))/(2*np.pi)
-    Z = np.sum([wn*cn for wn,cn in zip(wnl,cnl(fnl[0]))], axis=0)
+    def cnl(freq): return Al/(rhoh*4*np.pi**2*abs((freq**2-fnl**2)+1e-10))
+    Z = np.sum([zn*cn for zn,cn in zip(znl,cnl(fnl[0]))], axis=0)
     Zmax = np.max(Z)
     surf = [ax.plot_surface(X, Y, Z, cmap='twilight', vmax=Zmax*0.8, vmin=-Zmax*0.8)]
 
@@ -230,7 +230,7 @@ def anim(fnl, wnl, time_step, L, N, rhoh=1, Al=1):
     def update(frame):
         ax.clear()
         freqs = slider_freq.val
-        w = np.sum([wn*cn for wn,cn in zip(wnl,cnl(freqs))], axis=0)
+        w = np.sum([wn*cn for wn,cn in zip(znl,cnl(freqs))], axis=0)
         Z = w*np.cos((2*np.pi*freqs*time_step*frame/30)%(2*np.pi))
         Zmax = np.max(w)
         ax.set_zlim(-1.5*Zmax, 1.5*Zmax)
