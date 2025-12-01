@@ -11,7 +11,8 @@ A_laser = 1e-6
 pixel_size = 4
 
 load = np.load("eigensave.npz")
-eigen_f, eigen_w = load["eigen_f"], load["eigen_w"]
+eigen_f, eigen_z = load["eigen_f"], load["eigen_z"]
 
 rhoh = get_rhoh(layer_materials, *data.dicts_rhoh)
-anim(eigen_f, eigen_w[:,::pixel_size,::pixel_size], time_step, L,N//pixel_size, rhoh, A_laser)
+
+anim(eigen_f, eigen_z[:,::pixel_size,::pixel_size], time_step, L,N//pixel_size, rhoh, A_laser)
